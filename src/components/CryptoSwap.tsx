@@ -32,12 +32,13 @@ const CryptoSwap = () => {
     });
     const [secondToken, setSecondToken] = useState(() => {
         const storedTokenName = new URLSearchParams(window.location.search).get('secondToken');
+        if(storedTokenName === '') return { token: 'Select a token', icon: './cryptos/btg.svg', price: 0 };
         const storedToken = data.filter(item =>
             item.token.includes(storedTokenName!)
         )[0];
         return storedToken
             ? storedToken
-            : { token: 'Select Token', icon: './cryptos/btg.svg', price: 0 };
+            : { token: 'Select a token', icon: './cryptos/btg.svg', price: 0 };
     });
 
     const [fistValue, setFistValue] = useState(0);
@@ -67,9 +68,9 @@ const CryptoSwap = () => {
         // Update the URL parameters when the token values change
         updateUrlParams();
 
-        if (firstToken.token === 'Select Token') firstTokenRef.current?.setAttribute('disabled', 'true');
+        if (firstToken.token === 'Select a token') firstTokenRef.current?.setAttribute('disabled', 'true');
         else firstTokenRef.current?.removeAttribute('disabled');
-        if (secondToken.token === 'Select Token') secondTokenRef.current?.setAttribute('disabled', 'true');
+        if (secondToken.token === 'Select a token') secondTokenRef.current?.setAttribute('disabled', 'true');
         else secondTokenRef.current?.removeAttribute('disabled');
 
     }, [firstToken, secondToken]);
@@ -77,8 +78,8 @@ const CryptoSwap = () => {
     const updateUrlParams = () => {
         // Update the URL parameters with the current token values
         const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('firstToken', firstToken.token);
-        urlParams.set('secondToken', secondToken.token);
+        if(firstToken.token !== 'Select a token') urlParams.set('firstToken', firstToken.token);
+        if(secondToken.token !== 'Select a token')urlParams.set('secondToken', secondToken.token);
         window.history.replaceState({}, '', `?${urlParams.toString()}`);
     };
 
