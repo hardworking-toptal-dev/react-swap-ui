@@ -71,7 +71,7 @@ const CryptoSwap = () => {
         else firstTokenRef.current?.removeAttribute('disabled');
         if (secondToken.token === 'Select Token') secondTokenRef.current?.setAttribute('disabled', 'true');
         else secondTokenRef.current?.removeAttribute('disabled');
-        
+
     }, [firstToken, secondToken]);
 
     const updateUrlParams = () => {
@@ -125,7 +125,7 @@ const CryptoSwap = () => {
     }
 
     return (
-        <div className="w-[480px] h-[320px] p-1 rounded-lg border border-blue-300 mx-auto mt-[300px]">
+        <div className="w-[480px] h-[320px] p-1 rounded-lg border border-blue-300 mx-auto mt-[250px]">
             {
                 isOpenFristToken
                 &&
