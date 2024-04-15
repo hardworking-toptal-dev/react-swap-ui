@@ -5,7 +5,7 @@
 */
 
 import * as React from 'react';
-import { useState, useEffect, } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { message, Modal } from 'antd';
 
@@ -37,7 +37,7 @@ const CryptoSwap = () => {
         )[0];
         return storedToken
             ? storedToken
-            : { token: 'ETH', icon: './cryptos/eth.svg', price: 70 };
+            : { token: 'Select Token', icon: './cryptos/btg.svg', price: 0 };
     });
 
     const [fistValue, setFistValue] = useState(0);
@@ -46,6 +46,9 @@ const CryptoSwap = () => {
     const [messageApi, contextHolder] = message.useMessage();
 
     const { firstTokenParam, secondTokenParam } = useParams();
+
+    const firstTokenRef = useRef<HTMLInputElement>(null);
+    const secondTokenRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (firstTokenParam && secondTokenParam) {
@@ -63,6 +66,12 @@ const CryptoSwap = () => {
     useEffect(() => {
         // Update the URL parameters when the token values change
         updateUrlParams();
+
+        if (firstToken.token === 'Select Token') firstTokenRef.current?.setAttribute('disabled', 'true');
+        else firstTokenRef.current?.removeAttribute('disabled');
+        if (secondToken.token === 'Select Token') secondTokenRef.current?.setAttribute('disabled', 'true');
+        else secondTokenRef.current?.removeAttribute('disabled');
+        
     }, [firstToken, secondToken]);
 
     const updateUrlParams = () => {
@@ -80,17 +89,13 @@ const CryptoSwap = () => {
 
     const setFToken = (token: string, icon: string, price: number) => {
         setFirstToken({ token: token, icon: icon, price: price });
-        setFistValue((item) => {
-            return Number((item * firstToken.price / price).toFixed(5));
-        })
+        setFistValue(Number((secondValue * secondToken.price / price).toFixed(5)))
         onClose();
     }
 
     const setSToken = (token: string, icon: string, price: number) => {
         setSecondToken({ token: token, icon: icon, price: price });
-        setSecondValue((item) => {
-            return Number((item * secondToken.price / price).toFixed(5));
-        })
+        setSecondValue(Number((fistValue * firstToken.price / price).toFixed(5)))
         onClose();
     }
 
@@ -136,8 +141,9 @@ const CryptoSwap = () => {
                     <input
                         placeholder='0'
                         size={5}
+                        ref={firstTokenRef}
                         type="number"
-                        className="w-[300px] text-[30px] bg-transparent focus:outline-none"
+                        className="w-[200px] text-[30px] bg-transparent focus:outline-none"
                         style={{ WebkitAppearance: 'none', MozAppearance: 'textfield' }} // Add style to hide spin buttons
                         onChange={onChangeFirstToken}
                         value={fistValue.toString()}
@@ -152,7 +158,7 @@ const CryptoSwap = () => {
                     </div>
                 </div>
                 <span className="ml-3 text-gray-400 ">
-                    ${fistValue * firstToken.price}
+                    {fistValue != 0 && firstToken.price != 0 && `$${fistValue * firstToken.price}`}
                 </span>
             </div>
             <div
@@ -179,8 +185,9 @@ const CryptoSwap = () => {
                     <input
                         placeholder='0'
                         size={15}
+                        ref={secondTokenRef}
                         type="number"
-                        className="w-[300px] text-[30px] bg-transparent focus:outline-none"
+                        className="w-[200px] text-[30px] bg-transparent focus:outline-none"
                         onChange={onChangeSecondToken}
                         value={secondValue.toString()}
                     />
@@ -194,7 +201,7 @@ const CryptoSwap = () => {
                     </div>
                 </div>
                 <span className="ml-3 text-gray-400 ">
-                    ${secondValue * secondToken.price}
+                    {(secondValue != 0 && secondToken.price != 0) && `$${secondValue * secondToken.price}`}
                 </span>
             </div>
             {contextHolder}
